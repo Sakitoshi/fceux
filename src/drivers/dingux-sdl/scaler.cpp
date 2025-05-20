@@ -5,7 +5,7 @@
 #define AVERAGEHI(AB) ((((AB) & 0xF7DE0000) >> 1) + (((AB) & 0xF7DE) << 15))
 #define AVERAGELO(CD) ((((CD) & 0xF7DE) >> 1) + (((CD) & 0xF7DE0000) >> 17))
 
-extern uint32 palettetranslate[65536 * 4];
+extern uint32 palettetranslate[65536];
 
 /*
 	Upscale 256x224 -> 320x240
@@ -64,25 +64,30 @@ void upscale_320x448(uint32 *dst, uint8 *src)
 			source += 8;
 
 		}
-		Eh += 224; 
-		if(Eh >= 448) 
-		{ 
+		Eh += 224;
+		if(Eh >= 448)
+		{
 			Eh -= 448;
-			dh++; 
+			dh++;
 		}
 	}
 }
 
-
-void upscale_320x240(uint32 *dst, uint8 *src, int midh)
+void upscale_320x240(uint32 *dst, uint8 *src, int midh, int stretch)
 {
 //	int midh = 240 * 3 / 4;
 	int Eh = 0;
 	int source = 0;
 	int dh = 0;
-	int y, x;
+	int y, x, ycount;
+	if(!stretch) {
+		dst += ((240 - midh) / 4) * 320;
+		ycount = midh;
+	} else {
+		ycount = 240;
+	}
 
-	for (y = 0; y < 240; y++)
+	for (y = 0; y < ycount; y++)
 	{
 		source = dh * 256;
 
@@ -106,15 +111,19 @@ void upscale_320x240(uint32 *dst, uint8 *src, int midh)
 			}
 
 			*dst++ = ab;
-			*dst++  = ((ab >> 17) + ((cd & 0xFFFF) >> 1)) + (cd << 16);
-			*dst++  = (cd >> 16) + (ef << 16);
-			*dst++  = (ef >> 16) + (((ef & 0xFFFF0000) >> 1) + ((gh & 0xFFFF) << 15));
-			*dst++  = gh;
+			*dst++ = ((ab >> 17) + ((cd & 0xFFFF) >> 1)) + (cd << 16);
+			*dst++ = (cd >> 16) + (ef << 16);
+			*dst++ = (ef >> 16) + (((ef & 0xFFFF0000) >> 1) + ((gh & 0xFFFF) << 15));
+			*dst++ = gh;
 
 			source += 8;
 
 		}
-		Eh += 224; if(Eh >= 240) { Eh -= 240; dh++; }
+		Eh += midh;
+		if(Eh >= ycount) {
+			Eh -= ycount;
+			dh++;
+		}
 	}
 }
 

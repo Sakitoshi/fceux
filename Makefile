@@ -225,7 +225,7 @@ W_OPTS	= -Wno-write-strings -Wno-sign-compare
 
 F_OPTS = -flto -fomit-frame-pointer -fno-builtin -fno-common
 
-CC_OPTS	= -O2 -marm -march=armv5te -mtune=arm926ej-s $(F_OPTS) $(W_OPTS) $(SDL_CFLAGS)
+CC_OPTS	= -Ofast -marm -march=armv5te -mtune=arm926ej-s $(F_OPTS) $(W_OPTS) $(SDL_CFLAGS)
 
 CFLAGS += $(CC_OPTS)
 CFLAGS += -DDINGUX \

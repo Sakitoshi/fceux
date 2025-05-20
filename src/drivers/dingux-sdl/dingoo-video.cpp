@@ -63,7 +63,7 @@ int FDSSwitchRequested = 0;
 #define NOFFSET	(s_clipSides ? 8 : 0)
 
 /* Blur effect taken from vidblit.cpp */
-uint32 palettetranslate[65536 * 4];
+uint32 palettetranslate[65536];
 static uint32 CBM[3] = { 63488, 2016, 31 };
 static uint16 s_psdl[256];
 
@@ -329,16 +329,16 @@ void BlitScreen(uint8 *XBuf) {
 			}
 			break;
 	    case 3: // fullscreen fast2 (fceux default)
-			upscale_320x240((uint32 *)screen->pixels, (uint8 *)XBuf + 256 * 8, 240 * 3 / 4);
+			upscale_320x240((uint32 *)screen->pixels, (uint8 *)XBuf + s_srendline * 256, s_tlines, 0);
 			break;
 	    case 2: // fullscreen fast1 (added for TRIMUI)
-			upscale_320x240((uint32 *)screen->pixels, (uint8 *)XBuf + 256 * 8, 224);
+			upscale_320x240((uint32 *)screen->pixels, (uint8 *)XBuf + s_srendline * 256, s_tlines, 1);
 			break;
 	    case 1: // aspect fullscreen
 			{	register uint8 *pBuf = XBuf;
 				pBuf += (s_srendline * 256) + 8;
 				register uint16 *dest = (uint16 *) screen->pixels;
-				//dest += (320 * s_srendline) + 20;
+				//dest += (280 * s_srendline) + 20;
 				dest += (screen->w * s_srendline) + (screen->w - 280) / 2 + ((screen->h - 240) / 2) * screen->w;
 
 				// semi fullscreen no blur
